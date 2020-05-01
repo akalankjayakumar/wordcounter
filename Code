@@ -1,0 +1,114 @@
+# This program counts the number of occurences of every word in a text document.
+# It can then print out the most frequenly used words.
+# The user can also specify to print only a few specific words.
+# It does not consider prepositions, conjunctions, articles etc.
+# Tips to improve this program: 1. currently the program strips off hyphens -- but hyphens
+# can be used as a part of a compound word. Edit the program such that it doesn't strip off hyphens
+
+
+
+
+import string
+
+def remove_trivial(d):
+    #removes trivial words such as prepositions, conjunctions, articles, pronouns etc.
+    words = ['to', 'of', 'in', 'for', 'on', 'with', 'at', 'by', 'from', 'up', 'about', 'into','over','after','the','and','a','that','i','it','not','he','as','you','this','but','his','they','her','she','or','an','will','my','one','all','would','there','their']
+    words = words + [" "]
+
+    new_d = dict()
+    for key in d: #throws error "dictionary changed size" if you just mutate the old dictionary
+        if key not in words:
+            new_d[key] = d[key]
+
+    return new_d
+
+
+
+
+while True:
+    file_name = input("Please enter the file name that has the .txt document. \n")
+    try:
+        file = open(file_name, encoding ="utf-8")
+        break
+    except:
+        print("The file entered does not exist. \n Please try again.")
+        continue
+
+text = file.read()
+
+# Check point 1 - verified
+# print(text)
+
+
+
+text = text.translate(text.maketrans('','',string.punctuation))
+text = text.translate(text.maketrans('','','"')) # removes quotes
+text = text.translate(text.maketrans('','','“”')) # a weird quote that doesn't go away unless this is specified
+text = text.translate(text.maketrans('','',"—1234567890")) # a long dash and numbers
+text = text.lower()
+
+# Check point 2 - verified
+# print(text)
+
+words = text.split()
+dictionary = dict()
+for word in words:
+    dictionary[word] = dictionary.get(word, 0) + 1
+
+dictionary = remove_trivial(dictionary)
+
+#print(dictionary)
+
+
+
+decision = input("Done! Do you want to specify which words you want to be counted (if so, type 'Y') \nOr do you want the results for all words?(if so, type 'N') \n")
+
+while True:
+    try:
+        if decision == 'N' or decision == 'n':
+                word_countkv = list(dictionary.items())
+                word_countvk = list()
+                for (key, value) in word_countkv:
+                    word_countvk.append((value, key)) #swaps the key value pairs
+                    word_countvk.sort(reverse=True)
+                    word_countkv_sorted = list()
+                    for (key, value) in word_countvk:
+                        word_countkv_sorted.append((value, key)) #swaps the key value pairs
+                i = 0
+                for element in word_countkv_sorted:
+
+                    print(i, ". ", element)
+                    i = i + 1
+
+                #print(word_countkv_sorted)
+
+                break
+
+        elif decision == 'Y' or decision == 'y':
+
+            words = input("What are the words? Enter them separated by a comma. There should not be a space between your words.\n \n")
+            print("Okay, displaying results for the mentioned words.")
+            words = words.split(",")
+            word_countkv = list(dictionary.items())
+            word_countvk = list()
+            for (key, value) in word_countkv:
+                if key in words:
+                    print(key)
+                    word_countvk.append((value, key)) #swaps the key value pairs
+                    word_countvk.sort(reverse=True)
+                    word_countkv_sorted = list()
+                    for (key, value) in word_countvk:
+                        word_countkv_sorted.append((value, key)) #swaps the key value pairs
+            i = 0
+            for element in word_countkv_sorted:
+
+                print(i, ". ", element)
+                i = i + 1
+            #print(word_countkv_sorted)
+            break
+
+
+    except:
+        continue
+
+input()
